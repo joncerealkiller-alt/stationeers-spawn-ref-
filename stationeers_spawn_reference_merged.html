@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stationeers Vanilla Spawn XML Reference</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel-2: #1f2430;
+    --text: #e8ecf1;
+    --muted: #a9b3c1;
+    --accent: #6fb1ff;
+    --accent-2: #9be7b1;
+    --warn: #ffd36f;
+    --danger: #ff8b8b;
+    --border: #2d3442;
+    --code: #0b0d12;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, Segoe UI, Arial, sans-serif;
+    background: linear-gradient(180deg, #0d1016 0%, #111520 100%);
+    color: var(--text);
+  }
+  header {
+    padding: 24px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,17,21,.9);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+  h1 { margin: 0 0 8px; font-size: 28px; }
+  .sub { color: var(--muted); line-height: 1.45; max-width: 1100px; }
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    padding: 18px;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .controls { position: sticky; top: 120px; }
+  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  input[type="search"], select {
+    width: 100%;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .chip {
+    border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+    border-radius:999px; padding:7px 10px; cursor:pointer; font-size:13px;
+  }
+  .chip.active { border-color:var(--accent); background:#17304e; color:#fff; }
+  .legend { font-size:13px; color:var(--muted); line-height:1.5; }
+  .stats {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px;
+  }
+  .stat {
+    background: var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px;
+  }
+  .stat .k { font-size:12px; color:var(--muted); }
+  .stat .v { font-size:24px; margin-top:4px; font-weight:700; }
+  .section-title { margin:18px 0 10px; font-size:20px; }
+  details.card {
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--panel);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  details.card[open] { box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+  summary {
+    list-style:none; padding:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  summary::-webkit-details-marker { display:none; }
+  .title { font-size:18px; margin:0; }
+  .meta { margin-top:4px; color:var(--muted); font-size:13px; }
+  .badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .badge {
+    font-size:12px; border-radius:999px; padding:5px 9px;
+    border:1px solid var(--border); background:var(--panel-2); white-space:nowrap;
+  }
+  .b-safe { color:var(--accent-2); }
+  .b-structure { color:var(--accent); }
+  .b-item { color:var(--warn); }
+  .b-dynamic { color:#cba8ff; }
+  .b-condition { color:#ffb4e6; }
+  .card-body { padding:0 16px 16px; }
+  .grid2 { display:grid; grid-template-columns:1.1fr .9fr; gap:14px; }
+  .block {
+    background: var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px;
+  }
+  .block h4 {
+    margin:0 0 10px; font-size:14px; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  ul.compact { margin:0; padding-left:18px; line-height:1.5; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre {
+    margin:0; padding:12px; background:var(--code); color:#e6f0ff;
+    border:1px solid var(--border); border-radius:12px; overflow:auto; white-space:pre;
+  }
+  .code-actions { display:flex; gap:8px; margin-top:8px; }
+  button.btn {
+    cursor:pointer; border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+    border-radius:10px; padding:8px 10px; font-size:13px;
+  }
+  button.btn:hover { border-color:var(--accent); }
+  .note, .warning {
+    margin-top:10px; padding:10px 12px; border-radius:12px; font-size:14px;
+  }
+  .note { background:rgba(111,177,255,.08); border:1px solid rgba(111,177,255,.22); }
+  .warning { background:rgba(255,211,111,.08); border:1px solid rgba(255,211,111,.22); }
+  .footer { padding:18px; color:var(--muted); font-size:13px; }
+  .hidden { display:none !important; }
+  .pillrow { display:flex; gap:8px; flex-wrap:wrap; }
+  @media (max-width: 980px) {
+    .layout { grid-template-columns:1fr; }
+    .controls { position:static; }
+    .grid2 { grid-template-columns:1fr; }
+    .stats { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Stationeers Vanilla Spawn XML Reference</h1>
+  <div class="sub">
+    Interactive offline reference for the built-in spawn XML system. This focuses on <strong>vanilla-safe</strong> root fields, nested nodes, actions, and confirmed conditions that the base game already understands without requiring a runtime mod on the receiving side.
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="panel controls">
+      <label for="search">Search</label>
+      <input id="search" type="search" placeholder="BuildState, SourceCode, SlotIndex..." />
+
+      <label for="typeFilter">Section</label>
+      <select id="typeFilter">
+        <option value="all">All</option>
+        <option value="root">Root / container fields</option>
+        <option value="action">Action nodes</option>
+        <option value="condition">Condition nodes</option>
+        <option value="nested">Nested child spawn nodes</option>
+      </select>
+
+      <label>Target</label>
+      <div class="chips" id="targetChips">
+        <button class="chip active" data-target="all">All</button>
+        <button class="chip" data-target="structure">Structures</button>
+        <button class="chip" data-target="item">Items</button>
+        <button class="chip" data-target="dynamic">DynamicThings</button>
+      </div>
+
+      <div class="legend">
+        <p><strong>Confirmed action names</strong> from <code>ThingSpawnData.Actions</code>:</p>
+        <div class="pillrow">
+          <span class="badge">Logic</span>
+          <span class="badge">BuildState</span>
+          <span class="badge">Interaction</span>
+          <span class="badge">MovePlayer</span>
+          <span class="badge">Gene</span>
+          <span class="badge">Quantity</span>
+          <span class="badge">Percent</span>
+          <span class="badge">Reagents</span>
+          <span class="badge">Charge</span>
+          <span class="badge">Gas</span>
+          <span class="badge">SourceCode</span>
+        </div>
+        <p style="margin-top:10px;"><strong>Conditions are separate</strong> from actions. For example, <code>&lt;BuildState Index="-1" /&gt;</code> is an action, while <code>&lt;BuildState IsCompleted="true" /&gt;</code> is a condition.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><div class="k">Root fields</div><div class="v">11</div></div>
+      <div class="stat"><div class="k">Confirmed actions</div><div class="v">11</div></div>
+      <div class="stat"><div class="k">Nested nodes</div><div class="v">3</div></div>
+      <div class="stat"><div class="k">Condition names</div><div class="v">31</div></div>
+    </div>
+
+    <h2 class="section-title">Reference</h2>
+    <div id="cards"></div>
+
+    <h2 class="section-title">Quick templates</h2>
+    <div class="panel">
+      <div class="grid2">
+        <div class="block">
+          <h4>Damaged structure via build state</h4>
+<pre id="tpl-structure">&lt;Structure Id="StructureWallIron" HideInStartScreen="true"&gt;
+  &lt;Color Id="ColorOrange" /&gt;
+  &lt;SpawnPosition Rule="Explicit"&gt;
+    &lt;Offset x="0" y="0" z="0" /&gt;
+    &lt;Rotation x="0" y="90" z="0" /&gt;
+  &lt;/SpawnPosition&gt;
+  &lt;BuildState Index="-1" /&gt;
+&lt;/Structure&gt;</pre>
+          <div class="code-actions"><button class="btn" data-copy="tpl-structure">Copy</button></div>
+        </div>
+        <div class="block">
+          <h4>Activated grenade on spawn</h4>
+<pre id="tpl-grenade">&lt;Item Id="ItemGrenade" HideInStartScreen="true"&gt;
+  &lt;SpawnPosition Rule="Explicit"&gt;
+    &lt;Offset x="-458.6617" y="18.0760" z="1014.9330" /&gt;
+    &lt;Rotation x="67.8193" y="75.5511" z="90.0000" /&gt;
+  &lt;/SpawnPosition&gt;
+  &lt;Interaction Type="OnOff" Value="1" /&gt;
+&lt;/Item&gt;</pre>
+          <div class="code-actions"><button class="btn" data-copy="tpl-grenade">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Save this file anywhere and open it directly in a browser. No server needed.
+    </div>
+  </main>
+</div>
+
+<script>
+const data = [
+  {
+    kind:"root", target:["structure","item","dynamic"], title:"Root attributes on spawn nodes",
+    meta:"Available on ThingSpawnData-derived nodes",
+    attrs:["Id","HideInStartScreen","ExpandInStartScreen","ShowDeepStartScreenTooltip","StartScreenHeader"],
+    notes:[
+      "Id is the prefab id and is required for valid spawning.",
+      "HideInStartScreen, ExpandInStartScreen, ShowDeepStartScreenTooltip, and StartScreenHeader are optional.",
+      "These apply to Structure, Item, and DynamicThing nodes because they derive from ThingSpawnData."
+    ],
+    example:`<Structure Id="StructureWallIron" HideInStartScreen="true" StartScreenHeader="Wreckage" />`,
+    tags:["root","structure","item","dynamic"]
+  },
+  {
+    kind:"root", target:["structure","item","dynamic"], title:"Common child nodes",
+    meta:"Direct ThingSpawnData children",
+    attrs:["Color","Name","SpawnPosition"],
+    notes:[
+      "Color is emitted from ColorSwatchReference.",
+      "Name is emitted from LocalizedStringReference.",
+      "SpawnPosition can carry Rule, Offset, and Rotation."
+    ],
+    example:`<Structure Id="StructureWallIron">
+  <Color Id="ColorOrange" />
+  <Name>Damaged Wall</Name>
+  <SpawnPosition Rule="Explicit">
+    <Offset x="0" y="0" z="0" />
+    <Rotation x="0" y="90" z="0" />
+  </SpawnPosition>
+</Structure>`,
+    tags:["root","structure","item","dynamic"]
+  },
+  {
+    kind:"nested", target:["structure","item","dynamic"], title:"Nested child spawn nodes",
+    meta:"Containers supported by ThingSpawnData",
+    attrs:["Item","DynamicThing","Spawn"],
+    notes:[
+      "Nested Item nodes are stored in ThingSpawnData.Items.",
+      "Nested DynamicThing nodes are stored in ThingSpawnData.DynamicThings.",
+      "Nested Spawn nodes are stored in ThingSpawnData.Spawns."
+    ],
+    example:`<Structure Id="StructureLocker">
+  <Item Id="ItemBatteryCell" SlotIndex="0">
+    <Charge State="Full" />
+  </Item>
+</Structure>`,
+    tags:["nested","structure","item","dynamic"]
+  },
+  {
+    kind:"root", target:["item","dynamic"], title:"DynamicSpawnData slot attributes",
+    meta:"Additional attributes for Item and DynamicThing nodes",
+    attrs:["SlotId","SlotIndex","SlotClass"],
+    notes:[
+      "DynamicSpawnData adds SlotId, SlotIndex, and SlotClass.",
+      "Slot resolution order is SlotIndex, then SlotId, then SlotClass, then prefab fallback.",
+      "Useful for inserting spawned items into a parent thing's slots."
+    ],
+    example:`<Item Id="ItemBatteryCell" SlotIndex="0">
+  <Charge State="Full" />
+</Item>`,
+    tags:["root","item","dynamic"]
+  },
+
+  {
+    kind:"action", target:["structure"], title:"BuildState",
+    meta:"Confirmed by BuildStateAction",
+    attrs:["Index"],
+    notes:[
+      "Serializes as <BuildState Index=\"...\" />.",
+      "Executes by calling Structure.UpdateBuildStateAndVisualizer(Index, 0).",
+      "This is the correct vanilla-safe way to spawn damaged or partial structures that support build states.",
+      "Negative indexes can be valid for structures that treat negative build states as broken."
+    ],
+    example:`<BuildState Index="-1" />`,
+    tags:["action","structure"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"Interaction",
+    meta:"Confirmed by InteractionAction",
+    attrs:["Type","Value","TimeSpan (optional child)"],
+    notes:[
+      "Serializes as <Interaction Type=\"...\" Value=\"...\" />.",
+      "Optionally supports a nested TimeSpan child when delayed.",
+      "Executes by finding the target Interactable and calling Interact(Value, skipAnimation).",
+      "Useful for toggles like grenades or powered devices."
+    ],
+    example:`<Interaction Type="OnOff" Value="1" />`,
+    tags:["action","structure","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"Logic",
+    meta:"Confirmed by LogicValueAction",
+    attrs:["Type","Value"],
+    notes:[
+      "Serializes as <Logic Type=\"...\" Value=\"...\" />.",
+      "Applies to ILogicable targets.",
+      "Writes logic directly using SetLogicValue after checking CanLogicWrite.",
+      "Useful when you want direct logic state rather than an interactable action."
+    ],
+    example:`<Logic Type="Setting" Value="42" />`,
+    tags:["action","structure","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure"], title:"MovePlayer",
+    meta:"Confirmed by MovePlayerAction",
+    attrs:["SlotId","SlotIndex"],
+    notes:[
+      "Serializes as <MovePlayer SlotId=\"...\" /> or <MovePlayer SlotIndex=\"...\" />.",
+      "Moves the player into a slot on the spawned parent object.",
+      "Useful for landers, capsules, and seat-like slot hosts."
+    ],
+    example:`<MovePlayer SlotIndex="1" />`,
+    tags:["action","structure"]
+  },
+  {
+    kind:"action", target:["item","dynamic"], title:"Gene",
+    meta:"Confirmed by GeneAction",
+    attrs:["Id","Value"],
+    notes:[
+      "Serializes as <Gene Id=\"...\" Value=\"0.7500\" />.",
+      "Applies to Stackable targets with gene support.",
+      "Value is written with 4 decimal places."
+    ],
+    example:`<Gene Id="GrowthSpeed" Value="0.7500" />`,
+    tags:["action","item","dynamic"]
+  },
+  {
+    kind:"action", target:["item","dynamic"], title:"Quantity",
+    meta:"Confirmed by QuantityAction",
+    attrs:["Value"],
+    notes:[
+      "Serializes as <Quantity Value=\"...\" />.",
+      "Applies to IQuantity targets.",
+      "Absolute quantity; clamped against GetMaxQuantity."
+    ],
+    example:`<Quantity Value="5" />`,
+    tags:["action","item","dynamic"]
+  },
+  {
+    kind:"action", target:["item","dynamic"], title:"Percent",
+    meta:"Confirmed by PercentAction",
+    attrs:["Value"],
+    notes:[
+      "Serializes as <Percent Value=\"0.5000\" />.",
+      "Applies only to Consumable targets.",
+      "Sets quantity as Value * MaxQuantity."
+    ],
+    example:`<Percent Value="0.5000" />`,
+    tags:["action","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"Charge",
+    meta:"Confirmed by ChargeAction",
+    attrs:["State"],
+    notes:[
+      "Serializes as <Charge State=\"...\" />.",
+      "Applies to IChargable targets using IChargable.SetPower.",
+      "Exact valid values depend on BatteryCellState XML names."
+    ],
+    example:`<Charge State="Full" />`,
+    tags:["action","structure","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"Gas",
+    meta:"Confirmed by GasAction",
+    attrs:["Type","Moles","Litres","Celsius","Kelvin","Energy"],
+    notes:[
+      "Requires a gas type, an amount (Moles or Litres), and a temperature or energy (Celsius, Kelvin, or Energy).",
+      "Executes against InternalAtmosphere, atmospherics networks, Atmosphere targets, or WorldGrid targets.",
+      "Valid for atmospherics-capable things."
+    ],
+    example:`<Gas Type="Oxygen" Moles="10" Celsius="20" />`,
+    tags:["action","structure","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"Reagents",
+    meta:"Confirmed by ReagentAction",
+    attrs:["Flour","Milk","Egg","Iron","Gold","Carbon","Uranium","Copper","Steel","Hydrocarbon","Silver","Nickel","Lead","Electrum","Invar","Constantan","Solder","Plastic","Silicon","SalicylicAcid","Alcohol","Oil","Potato","Tomato","Fenoxitone","ColorRed","ColorGreen","ColorBlue","ColorYellow","ColorOrange","Pumpkin","Rice","Waspaloy","Stellite","Inconel","Hastelloy","Astroloy","Cobalt","Corn","Wheat","Biomass","Soy","Mushroom","Sugar","Cocoa"],
+    notes:[
+      "Serializes as a single Reagents node with only non-zero reagents written as attributes.",
+      "Applies to Item.TrySetCreatedReagentMixture(...) or Thing.ReagentMixture where supported."
+    ],
+    example:`<Reagents Iron="10" Nickel="5" Steel="2.5" />`,
+    tags:["action","structure","item","dynamic"]
+  },
+  {
+    kind:"action", target:["structure","item","dynamic"], title:"SourceCode",
+    meta:"Confirmed by SourceCodeAction",
+    attrs:["Element text content"],
+    notes:[
+      "Serializes as <SourceCode>...raw text...</SourceCode>.",
+      "Applies to ISourceCode targets using SetSourceCode(Text).",
+      "The code is written as direct element text, not as a nested <Text> child in exported XML."
+    ],
+    example:`<SourceCode>alias pump d0
+s pump On 1</SourceCode>`,
+    tags:["action","structure","item","dynamic"]
+  },
+
+  {
+    kind:"condition", target:["structure","item","dynamic"], title:"Condition system overview",
+    meta:"Confirmed by ConditionData",
+    attrs:["Hidden","Conditions (nested group)"],
+    notes:[
+      "Conditions are filters that gate execution or spawning.",
+      "They are separate from actions.",
+      "Conditions can be nested and grouped via <Conditions>."
+    ],
+    example:`<Difficulty Id="Stationeers" />
+<Species Id="Human" />`,
+    tags:["condition","structure","item","dynamic"]
+  },
+  {
+    kind:"condition", target:["structure"], title:"BuildState condition",
+    meta:"Confirmed by BuildStateCondition",
+    attrs:["IsCompleted","CanManufacture","MachineTier","BlockGravity"],
+    notes:[
+      "Checks current structure build-state properties.",
+      "This is a condition, not the BuildState action.",
+      "Useful for filtering based on completed/manufacturing/gravity-blocking states."
+    ],
+    example:`<BuildState IsCompleted="true" />`,
+    tags:["condition","structure"]
+  },
+  {
+    kind:"condition", target:["item","dynamic"], title:"Decay condition",
+    meta:"Confirmed by DecayCondition",
+    attrs:["Value","Compare (inherited from ConditionComparable)"],
+    notes:[
+      "Applies to IPerishable targets.",
+      "Checks decay level via GetDecay().",
+      "Useful for gating logic based on spoilage."
+    ],
+    example:`<Decay Value="0.5000" Compare="Greater" />`,
+    tags:["condition","item","dynamic"]
+  },
+  {
+    kind:"condition", target:["structure","item","dynamic"], title:"Built-in condition names",
+    meta:"Declared on ConditionData.Conditions",
+    attrs:["Room","Network","SurvivalProperty","CustomName","Prefab","Contact","Size","Temperature","GrowthState","PlantStatus","PlantRecord","LogicType","Reagents","BuildState","Interactable","Quantity","Decay","Gas","Pressure","TemperatureRange","Percent","Item","Moles","Charge","Difficulty","Species","PreSpawned","InCell","Region","Surface","Depth"],
+    notes:[
+      "These are the built-in vanilla-safe condition element names declared directly on ConditionData.",
+      "Only a few were fully expanded here, but the names themselves are confirmed."
+    ],
+    example:`<Difficulty Id="Stationeers" />
+<Species Id="Human" />
+<Charge Value="0.5" Compare="Greater" />`,
+    tags:["condition","structure","item","dynamic"]
+  },
+  {
+    kind:"condition", target:["structure"], title:"What is not confirmed as vanilla spawn action data",
+    meta:"Save/runtime state not declared in ThingSpawnData.Actions",
+    attrs:["DamageState","IsBurst","DamageRecord","PipeNetworkId"],
+    notes:[
+      "These exist in save/load or runtime systems, but are not part of the built-in ThingSpawnData action list.",
+      "They should not be assumed valid as vanilla thing-spawn action nodes.",
+      "This is why burst-pipe state is save-load supported but not exposed by normal spawn XML."
+    ],
+    example:`<!-- Not confirmed as valid vanilla thing-spawn actions -->
+<DamageState ... />
+<IsBurst>Pressure</IsBurst>
+<DamageRecord>Pressure</DamageRecord>`,
+    tags:["condition","structure"]
+  }
+];
+
+const cards = document.getElementById("cards");
+const search = document.getElementById("search");
+const typeFilter = document.getElementById("typeFilter");
+const targetChips = [...document.querySelectorAll("#targetChips .chip")];
+let target = "all";
+
+function badge(title, cls=""){ return `<span class="badge ${cls}">${title}</span>`; }
+function esc(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+
+function cardHTML(item, idx){
+  const badges = [
+    badge("vanilla-safe","b-safe"),
+    ...(item.target.includes("structure") ? [badge("structure","b-structure")] : []),
+    ...(item.target.includes("item") ? [badge("item","b-item")] : []),
+    ...(item.target.includes("dynamic") ? [badge("dynamic","b-dynamic")] : []),
+    badge(item.kind, item.kind==="condition" ? "b-condition" : "")
+  ];
+  return `
+  <details class="card" data-kind="${item.kind}" data-target="${item.target.join(" ")}"
+    data-search="${esc([item.title,item.meta,item.attrs.join(" "),item.notes.join(" "),item.example].join(" ").toLowerCase())}">
+    <summary>
+      <div>
+        <div class="title">${item.title}</div>
+        <div class="meta">${item.meta}</div>
+      </div>
+      <div class="badges">${badges.join("")}</div>
+    </summary>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="block">
+          <h4>XML shape</h4>
+          <pre id="ex-${idx}">${esc(item.example)}</pre>
+          <div class="code-actions"><button class="btn" data-copy="ex-${idx}">Copy</button></div>
+        </div>
+        <div class="block">
+          <h4>Attributes / fields</h4>
+          <ul class="compact">${item.attrs.map(a=>`<li><code>${esc(a)}</code></li>`).join("")}</ul>
+        </div>
+      </div>
+      <div class="block" style="margin-top:12px;">
+        <h4>Notes</h4>
+        <ul class="compact">${item.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>
+      </div>
+    </div>
+  </details>`;
+}
+
+function render(){
+  cards.innerHTML = data.map(cardHTML).join("");
+  document.querySelectorAll("[data-copy]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.getAttribute("data-copy");
+      const el = document.getElementById(id);
+      try {
+        await navigator.clipboard.writeText(el.innerText);
+        const old = btn.textContent; btn.textContent = "Copied";
+        setTimeout(()=>btn.textContent=old, 1000);
+      } catch {}
+    });
+  });
+  applyFilters();
+}
+
+function applyFilters(){
+  const q = search.value.trim().toLowerCase();
+  const kind = typeFilter.value;
+  document.querySelectorAll("details.card").forEach(card=>{
+    const okSearch = !q || card.dataset.search.includes(q);
+    const okKind = kind==="all" || card.dataset.kind===kind;
+    const okTarget = target==="all" || card.dataset.target.split(" ").includes(target);
+    card.classList.toggle("hidden", !(okSearch && okKind && okTarget));
+  });
+}
+
+search.addEventListener("input", applyFilters);
+typeFilter.addEventListener("change", applyFilters);
+targetChips.forEach(chip=>{
+  chip.addEventListener("click", ()=>{
+    targetChips.forEach(c=>c.classList.remove("active"));
+    chip.classList.add("active");
+    target = chip.dataset.target;
+    applyFilters();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
